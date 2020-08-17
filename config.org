@@ -1,0 +1,180 @@
+* Global UI
+
+** Don't show startup message
+
+   #+begin_src emacs-lisp
+   (setq inhibit-startup-message t)
+   #+end_src
+
+** Don't show toolbar
+   #+begin_src emacs-lisp
+   (tool-bar-mode -1)
+   #+end_src
+
+
+** Use ibuffer
+   #+begin_src emacs-lisp
+   (defalias 'list-buffers 'ibuffer)
+   #+end_src
+
+** Set theme
+
+   #+begin_src emacs-lisp
+      (use-package doom-themes
+	:straight t
+	:config
+	(setq doom-themes-enable-bold t)
+	(setq doom-themes-enable-italic t)
+	(load-theme 'doom-one t)
+	(doom-themes-org-config))
+   #+end_src
+
+** Autocomplete everywhere
+
+   #+begin_src emacs-lisp
+     (use-package company
+       :straight t
+       :init
+       (add-hook 'after-init-hook 'global-company-mode))
+   #+end_src
+
+** Minibuffer completion (Swiper)
+
+   #+begin_src emacs-lisp
+     (use-package counsel
+       :straight t)
+
+     (use-package swiper
+       :straight t
+       :requires (counsel)
+       :config
+       (progn
+	 (ivy-mode 1)
+	 (setq ivy-use-virtual-buffers t)
+	 (setq enable-recursive-minibuffers t)
+	 ;; enable this if you want `swiper' to use it
+	 ;; (setq search-default-mode #'char-fold-to-regexp)
+	 (global-set-key "\C-s" 'swiper)
+	 (global-set-key (kbd "C-c C-r") 'ivy-resume)
+	 (global-set-key (kbd "<f6>") 'ivy-resume)
+	 (global-set-key (kbd "M-x") 'counsel-M-x)
+	 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+	 (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+	 (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+	 (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+	 (global-set-key (kbd "<f1> l") 'counsel-find-library)
+	 (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+	 (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+	 (global-set-key (kbd "C-c g") 'counsel-git)
+	 (global-set-key (kbd "C-c j") 'counsel-git-grep)
+	 (global-set-key (kbd "C-c k") 'counsel-ag)
+	 (global-set-key (kbd "C-x l") 'counsel-locate)
+	 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)))
+   #+end_src
+
+
+** Window Management
+   #+begin_src emacs-lisp
+     (use-package ace-window
+       :straight t
+       :init
+       (progn
+	 (global-set-key [remap other-window] 'ace-window)
+	 (custom-set-faces
+	  '(aw-leading-char-face
+	    ((t (:inherit ace-jump-face-foreground :height 3.0)))))))
+   #+end_src
+
+
+** Flycheck
+   #+begin_src emacs-lisp
+    (use-package which-key
+      :straight t
+      :config (which-key-mode))
+
+    (use-package flycheck
+      :straight t
+      :init (global-flycheck-mode))
+
+  #+end_src
+
+
+* Mode-specific Config
+
+** Org Mode
+   
+   #+begin_src emacs-lisp
+     (use-package org-bullets
+       :straight t
+       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+   #+end_src
+
+** Lisp
+
+*** Paredit
+    #+begin_src emacs-lisp
+      (use-package paredit
+	:straight t
+	:config
+	(add-hook 'lisp-mode-hook #'enable-paredit-mode)
+	(add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
+    #+end_src
+
+*** Slime
+    #+begin_src emacs-lisp
+      (use-package slime
+	:straight t
+	:init
+	(progn
+	  (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
+	  (add-hook 'inferior-lisp-mopde-hook (lambda () (inferior-slime-mode t)))
+	  (setq inferior-lisp-program "sbcl")))
+    #+end_src
+
+** Magit
+
+   #+begin_src emacs-lisp
+     (use-package magit
+       :straight t)
+   #+end_src
+
+** LSP
+   
+  #+begin_src emacs-lisp
+    (use-package lsp-mode
+      :straight t
+      :hook (progn
+	      (scala-mode . lsp)
+	      (lsp-mode . lsp-lens-mode))
+      :config (setq lsp-prefer-flymake nil))
+
+    (use-package lsp-ui
+      :straight t)
+
+    (use-package company-lsp
+      :straight t)
+  #+end_src
+
+   
+** Scala
+   #+begin_src emacs-lisp
+     (use-package scala-mode
+       :straight t
+       :mode "\\.s\\(cala\\|bt\\|c\\)$")
+
+     (use-package lsp-metals
+       :straight t)
+   #+end_src
+
+
+* Misc Packages
+
+  #+begin_src emacs-lisp
+    (use-package try
+      :straight t)
+  #+end_src
+
+  #+begin_src emacs-lisp
+    (use-package yasnippet
+      :straight t)
+  #+end_src
