@@ -1,0 +1,7 @@
+.*
+config.el
+recentf
+auto-save-list/
+straight/
+transient/
+elpa/
