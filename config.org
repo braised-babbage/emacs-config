@@ -29,49 +29,38 @@
 	(doom-themes-org-config))
    #+end_src
 
-** Autocomplete everywhere
+
+** Completion
 
    #+begin_src emacs-lisp
+     (use-package helm
+       :ensure t
+       :bind (:map helm-map 
+	      ("<tab>" . helm-execute-persistent-action))
+       :bind* (("M-x" . helm-M-x)
+	       ("C-x C-f" . helm-find-files)
+	       ("C-x b" . helm-buffers-list)))
+
+     (use-package auto-complete
+       :ensure t
+       :bind (:map ac-menu-map
+		   ("C-n" . ac-next)
+		   ("C-p" . ac-previous))
+       :config
+       (setq ac-auto-start 1
+	     ac-auto-show-menu 0.1
+	     ac-use-menu-map t))
+
      (use-package company
        :straight t
        :init
-       (add-hook 'after-init-hook 'global-company-mode))
-   #+end_src
-
-** Minibuffer completion (Swiper)
-
-   #+begin_src emacs-lisp
-     (use-package counsel
-       :straight t)
-
-     (use-package swiper
-       :straight t
-       :requires (counsel)
+       (add-hook 'after-init-hook 'global-company-mode)
        :config
-       (progn
-	 (ivy-mode 1)
-	 (setq ivy-use-virtual-buffers t)
-	 (setq enable-recursive-minibuffers t)
-	 ;; enable this if you want `swiper' to use it
-	 ;; (setq search-default-mode #'char-fold-to-regexp)
-	 (global-set-key "\C-s" 'swiper)
-	 (global-set-key (kbd "C-c C-r") 'ivy-resume)
-	 (global-set-key (kbd "<f6>") 'ivy-resume)
-	 (global-set-key (kbd "M-x") 'counsel-M-x)
-	 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-	 (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-	 (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-	 (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-	 (global-set-key (kbd "<f1> l") 'counsel-find-library)
-	 (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-	 (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-	 (global-set-key (kbd "C-c g") 'counsel-git)
-	 (global-set-key (kbd "C-c j") 'counsel-git-grep)
-	 (global-set-key (kbd "C-c k") 'counsel-ag)
-	 (global-set-key (kbd "C-x l") 'counsel-locate)
-	 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)))
-   #+end_src
+       (setq company-minimum-prefix-length 2
+	     company-idle-delay 0.1
+	     company-flx-limit 20))
 
+   #+end_src
 
 ** Window Management
    #+begin_src emacs-lisp
@@ -98,6 +87,19 @@
 
   #+end_src
 
+** Tabs
+   #+begin_src emacs-lisp
+   (setq indent-tabs-mode nil)
+   #+end_src
+
+
+** Auto-Backup and Auto-Save
+   #+begin_src emacs-lisp
+     (setq backup-directory-alist
+	   `((".*" . ,temporary-file-directory)))
+     (setq auto-save-file-name-transforms
+	   `((".*" ,temporary-file-directory t)))
+   #+end_src
 
 * Mode-specific Config
 
@@ -109,6 +111,21 @@
        :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
    #+end_src
 
+** Deft
+  #+begin_src emacs-lisp
+    (use-package deft
+      :straight t
+      :bind ("<f8>" . deft)
+      :commands (deft)
+      :init (setq deft-directory "~/repos/notes"
+		  deft-text-mode 'org-mode
+		  deft-use-filter-string-for-filename t
+		  deft-file-naming-rules '((noslash . "-")
+					   (nospace . "-")
+					   (case-fn . downcase))
+		  deft-org-mode-title-prefix t
+		  deft-extensions '("org")))
+  #+end_src
 ** Lisp
 
 *** Paredit
@@ -124,11 +141,19 @@
     #+begin_src emacs-lisp
       (use-package slime
 	:straight t
-	:init
-	(progn
-	  (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
-	  (add-hook 'inferior-lisp-mopde-hook (lambda () (inferior-slime-mode t)))
-	  (setq inferior-lisp-program "sbcl")))
+	:config
+	(setq inferior-lisp-program "/usr/local/bin/sbcl") ; substitute with the path to the compiler
+	(slime-setup '(slime-fancy slime-company)))
+
+      (use-package slime-company
+	:after (slime company)
+	:straight t
+	:config
+	(setq slime-company-completion 'fuzzy))
+
+      (show-paren-mode)
+      (electric-pair-mode)
+
     #+end_src
 
 ** Magit
@@ -166,6 +191,54 @@
        :straight t)
    #+end_src
 
+
+** C
+
+ #+begin_src emacs-lisp
+   (use-package ccls
+     :straight t
+     :config
+     (setq ccls-executable "/usr/local/bin/ccls")
+     :hook ((c-mode c++-mode objc-mode cuda-mode) .
+	    (lambda () (require 'ccls) (lsp))))
+
+   (use-package realgud
+     :straight t)
+
+   (use-package realgud-lldb
+     :straight t)
+
+   (require 'dap-lldb)
+
+   (dap-register-debug-template
+     "bitwise"
+     (list :type "lldb"
+	   :cwd "/Users/erik/repos/bitwise/"
+	   :request "launch"
+	   :program "debug/bitwise"
+	   :name "bitwise"))
+ #+end_src
+
+** Julia
+ 
+   #+begin_src emacs-lisp
+     (use-package julia-mode
+       :straight t)
+
+     (use-package jupyter
+       :straight t)
+   #+end_src
+
+
+** Python 
+   #+begin_src emacs-lisp
+     (use-package elpy
+       :straight t
+       :init
+       (elpy-enable)
+       :config 
+       (setq elpy-rpc-virtualenv-path 'current))
+   #+end_src
 
 * Misc Packages
 

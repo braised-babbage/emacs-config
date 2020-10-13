@@ -13,8 +13,9 @@
   (load bootstrap-file nil 'nomessage))
 
 
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin:/Library/TeX/texbin"))
-(setq exec-path (append exec-path '("/usr/local/bin" "/Library/TeX/texbin")))
+(setenv "PATH" (concat (getenv "PATH")
+		       ":/usr/local/bin:/Library/TeX/texbin:/Users/erik/miniconda3/bin:/usr/local/opt/llvm/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin" "/Library/TeX/texbin:/Users/erik/miniconda3/bin" "/usr/local/opt/llvm/bin")))
 
 (straight-use-package 'use-package)
 
