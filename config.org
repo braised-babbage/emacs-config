@@ -152,7 +152,6 @@
 	(setq slime-company-completion 'fuzzy))
 
       (show-paren-mode)
-      (electric-pair-mode)
 
     #+end_src
 
