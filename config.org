@@ -34,7 +34,7 @@
 
    #+begin_src emacs-lisp
      (use-package helm
-       :ensure t
+       :straight t
        :bind (:map helm-map 
 	      ("<tab>" . helm-execute-persistent-action))
        :bind* (("M-x" . helm-M-x)
@@ -42,7 +42,7 @@
 	       ("C-x b" . helm-buffers-list)))
 
      (use-package auto-complete
-       :ensure t
+       :straight t
        :bind (:map ac-menu-map
 		   ("C-n" . ac-next)
 		   ("C-p" . ac-previous))
@@ -142,8 +142,7 @@
       (use-package slime
 	:straight t
 	:config
-	(setq inferior-lisp-program "/usr/local/bin/sbcl") ; substitute with the path to the compiler
-	(slime-setup '(slime-fancy slime-company)))
+	(setq inferior-lisp-program (executable-find "sbcl")))
 
       (use-package slime-company
 	:after (slime company)
@@ -151,6 +150,7 @@
 	:config
 	(setq slime-company-completion 'fuzzy))
 
+      (slime-setup '(slime-fancy slime-company))
       (show-paren-mode)
 
     #+end_src

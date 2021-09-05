@@ -12,12 +12,12 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq package-enable-at-startup nil)
 
 (setenv "PATH" (concat (getenv "PATH")
 		       ":/usr/local/bin:/Library/TeX/texbin:/Users/erik/miniconda3/bin:/usr/local/opt/llvm/bin"))
 (setq exec-path (append exec-path '("/usr/local/bin" "/Library/TeX/texbin:/Users/erik/miniconda3/bin" "/usr/local/opt/llvm/bin")))
 
 (straight-use-package 'use-package)
-(straight-use-package 'helm)
 
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
